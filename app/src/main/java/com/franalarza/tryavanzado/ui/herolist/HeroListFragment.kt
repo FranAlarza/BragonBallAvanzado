@@ -1,27 +1,33 @@
 package com.franalarza.tryavanzado.ui.herolist
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.franalarza.tryavanzado.HeroesState
+import com.franalarza.tryavanzado.R
 import com.franalarza.tryavanzado.databinding.FragmentHeroListBinding
-import com.franalarza.tryavanzado.domain.Hero
 import com.franalarza.tryavanzado.ui.commons.HeroListAdapter
-import java.util.UUID
+import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
+@AndroidEntryPoint
 class HeroListFragment : Fragment() {
 
     private var _binding: FragmentHeroListBinding? = null
     private val binding get() = _binding!!
 
-    private val adapter = HeroListAdapter()
-    private  val viewModel: HeroListViewModel by viewModels()
+    private val adapter = HeroListAdapter {
+        Log.d("Nombre Hero", it.toString())
+
+        findNavController().navigate(HeroListFragmentDirections.actionHeroListFragmentToDetailFragment(it))
+    }
+    private  val viewModel: HeroesListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,12 +45,21 @@ class HeroListFragment : Fragment() {
         with(binding) {
             heroList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             heroList.adapter = adapter
-            adapter.submitList(getHero(20))
+            viewModel.liveHeroes.observe(viewLifecycleOwner) { state ->
+                when (state) {
+                    is HeroesState.Success -> {
+                        adapter.submitList(state.heroes)
+                    }
+
+                    is HeroesState.Failure -> {
+                        adapter.submitList(state.heroes)
+                    }
+                }
+
+            }
+            viewModel.getHeroes()
         }
 
-        binding.faboton.setOnClickListener {
-            viewModel.tareaCostosa()
-        }
     }
 
     override fun onDestroyView() {
@@ -52,14 +67,4 @@ class HeroListFragment : Fragment() {
         _binding = null
     }
 
-    fun getHero(size: Int): List<Hero> {
-        val listHero = mutableListOf<Hero>()
-
-        for (i in 0..size) {
-            val hero = Hero(UUID.randomUUID().toString(), "hero-$i", "", "photo-$i")
-            listHero.add(hero)
-        }
-
-        return listHero
-    }
 }

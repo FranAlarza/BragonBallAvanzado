@@ -1,17 +1,9 @@
 package com.franalarza.tryavanzado.data.remote
 
-import retrofit2.Retrofit
+import com.franalarza.tryavanzado.data.remote.request.HeroRequest
+import com.franalarza.tryavanzado.data.remote.response.HeroResponse
 
-
-class RemoteDataSource {
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://dragonball.keepcoding.education")
-        .build()
-
-    private val api: DragonBallAPI = retrofit.create(DragonBallAPI::class.java)
-
-    suspend fun getToken() {
-        api.getToken()
-    }
+interface RemoteDataSource {
+    suspend fun getToken(): String
+    suspend fun getHeroes(): List<HeroResponse>
 }

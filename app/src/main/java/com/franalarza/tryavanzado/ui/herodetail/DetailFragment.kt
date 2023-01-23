@@ -6,12 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import coil.load
 import com.franalarza.tryavanzado.R
 import com.franalarza.tryavanzado.databinding.FragmentHeroDetailBinding
 
-/**
- * A simple [Fragment] subclass as the second destination in the navigation.
- */
 class DetailFragment : Fragment() {
 
     private var _binding: FragmentHeroDetailBinding? = null
@@ -19,6 +18,8 @@ class DetailFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private val args: DetailFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,10 +33,11 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.buttonSecond.setOnClickListener {
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+        with(binding) {
+            heroImageDetail.load(args.hero.photo)
+            heroNameDetail.text = args.hero.name
         }
+
     }
 
     override fun onDestroyView() {

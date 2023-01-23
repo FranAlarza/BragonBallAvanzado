@@ -5,10 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.franalarza.tryavanzado.databinding.ItemHeroListBinding
-import com.franalarza.tryavanzado.domain.Hero
+import com.franalarza.tryavanzado.domain.HeroPresent
 
-class HeroListAdapter : ListAdapter<Hero, HeroListAdapter.HeroViewHolder>(HeroDiffCallBack()) {
+class HeroListAdapter(private val onItemClickListener: (HeroPresent) -> Unit) : ListAdapter<HeroPresent, HeroListAdapter.HeroViewHolder>(HeroDiffCallBack()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeroViewHolder {
         return HeroViewHolder(
@@ -25,22 +26,31 @@ class HeroListAdapter : ListAdapter<Hero, HeroListAdapter.HeroViewHolder>(HeroDi
     }
 
 
-    class HeroViewHolder(private val binding: ItemHeroListBinding) :
+    inner class HeroViewHolder(private val binding: ItemHeroListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(hero: Hero) {
+        private lateinit var hero: HeroPresent
+        init {
+            binding.root.setOnClickListener {
+                onItemClickListener(hero)
+            }
+        }
+
+        fun bind(heroPresent: HeroPresent) {
             with(binding) {
-                heroName.text = hero.name
+                hero = heroPresent
+                heroImage.load(heroPresent.photo)
+                heroName.text = heroPresent.name
             }
 
         }
     }
 
-    class HeroDiffCallBack : DiffUtil.ItemCallback<Hero>() {
-        override fun areItemsTheSame(oldItem: Hero, newItem: Hero): Boolean {
+    class HeroDiffCallBack : DiffUtil.ItemCallback<HeroPresent>() {
+        override fun areItemsTheSame(oldItem: HeroPresent, newItem: HeroPresent): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Hero, newItem: Hero): Boolean {
+        override fun areContentsTheSame(oldItem: HeroPresent, newItem: HeroPresent): Boolean {
             return oldItem == newItem
         }
 
