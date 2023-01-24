@@ -23,4 +23,11 @@
         android:textStyle="bold"
         tools:text="Hero Name"/>
 
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:id="@+id/map_hero_location"
+        tools:context=".ui.MainActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
+
 </FrameLayout>

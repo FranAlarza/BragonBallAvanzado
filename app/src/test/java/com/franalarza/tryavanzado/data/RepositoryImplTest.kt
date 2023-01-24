@@ -1,11 +1,10 @@
 package com.franalarza.tryavanzado.data
 
-import android.util.Log.e
+
 import com.franalarza.tryavanzado.data.local.LocalDataSource
 import com.franalarza.tryavanzado.data.mappers.Mappers
 import com.franalarza.tryavanzado.data.remote.RemoteDataSource
-import com.franalarza.tryavanzado.data.remote.response.HeroResponse
-import com.franalarza.tryavanzado.domain.HeroPresent
+import com.franalarza.tryavanzado.utils.generateHeroesResponse
 import com.google.common.truth.Truth
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -13,9 +12,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
-
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -29,7 +25,7 @@ class RepositoryImplTest {
         val localDataSource = mockk<LocalDataSource>()
         val remoteDataSource = mockk<RemoteDataSource>()
 
-        coEvery { remoteDataSource.getHeroes() } returns generateHeroes()
+        coEvery { remoteDataSource.getHeroes() } returns generateHeroesResponse()
         sut = RepositoryImpl(remoteDataSource, localDataSource, Mappers())
 
         // WHEN
@@ -38,10 +34,7 @@ class RepositoryImplTest {
         // THEN
         coVerify { remoteDataSource.getHeroes() }
         Truth.assertThat(actualList).isNotEmpty()
-        Truth.assertThat(actualList).containsExactlyElementsIn(generateHeroes())
+        Truth.assertThat(actualList).containsExactlyElementsIn(generateHeroesResponse())
     }
 
-    private fun generateHeroes(): List<HeroResponse> {
-       return (0..10).map { HeroResponse("$it", "name $it", "photo $it", false, "description $it") }
-    }
 }

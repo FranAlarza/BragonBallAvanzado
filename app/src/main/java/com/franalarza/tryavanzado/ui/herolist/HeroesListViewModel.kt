@@ -9,6 +9,7 @@ import androidx.room.Insert
 import com.franalarza.tryavanzado.HeroesState
 import com.franalarza.tryavanzado.data.RepositoryImpl
 import com.franalarza.tryavanzado.domain.HeroPresent
+import com.franalarza.tryavanzado.domain.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HeroesListViewModel @Inject constructor(
-    private val repository: RepositoryImpl
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _heroes = MutableLiveData<HeroesState>()

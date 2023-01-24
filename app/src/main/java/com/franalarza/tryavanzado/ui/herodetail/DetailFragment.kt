@@ -10,14 +10,20 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import com.franalarza.tryavanzado.R
 import com.franalarza.tryavanzado.databinding.FragmentHeroDetailBinding
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
-class DetailFragment : Fragment() {
+class DetailFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentHeroDetailBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var googleMap: GoogleMap
 
     private val args: DetailFragmentArgs by navArgs()
 
@@ -38,10 +44,23 @@ class DetailFragment : Fragment() {
             heroNameDetail.text = args.hero.name
         }
 
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map_hero_location) as? SupportMapFragment
+        mapFragment?.getMapAsync(this)
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+        map.addMarker(
+            MarkerOptions()
+                .position(LatLng(0.0, 0.0))
+                .title("Marker")
+        )
+
     }
 }
