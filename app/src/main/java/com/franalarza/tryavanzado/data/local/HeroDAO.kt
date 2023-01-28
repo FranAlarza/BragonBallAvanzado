@@ -13,4 +13,7 @@ interface HeroDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(heroes: List<HeroLocal>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertHero(hero: HeroLocal)
 }

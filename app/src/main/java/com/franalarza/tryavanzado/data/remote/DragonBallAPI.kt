@@ -1,18 +1,30 @@
 package com.franalarza.tryavanzado.data.remote
 
+import android.location.Location
+import com.franalarza.tryavanzado.data.remote.request.FavoriteRequest
 import com.franalarza.tryavanzado.data.remote.request.HeroRequest
+import com.franalarza.tryavanzado.data.remote.request.LocationsRequest
+import com.franalarza.tryavanzado.data.remote.request.TokenRequest
 import com.franalarza.tryavanzado.data.remote.response.HeroResponse
+import com.franalarza.tryavanzado.domain.HeroDetail
+import com.franalarza.tryavanzado.domain.HeroLocation
 import com.franalarza.tryavanzado.domain.HeroPresent
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import com.franalarza.tryavanzado.ui.login.LoginState
+import retrofit2.http.*
 
 interface DragonBallAPI {
-    @GET("/api/auth/login")
-    suspend fun getToken(): String
+    @POST("/api/auth/login")
+    suspend fun getToken(@Header("Authorization") token: String): String
 
     @POST("/api/heros/all")
-    @Headers("Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6InByaXZhdGUiLCJ0eXAiOiJKV1QifQ.eyJpZGVudGlmeSI6IjAyNzE3QkY0LTNDMTgtNEU1NS05RjBFLUFDRkQxNUM1Q0FGNyIsImVtYWlsIjoiZnJhbmFsYXJ6YUBnbWFpbC5jb20iLCJleHBpcmF0aW9uIjo2NDA5MjIxMTIwMH0.HgNvYLXRlEGXYtKXw1lgyQmHD1tltpRzSptGnis2fsA")
-    suspend fun getHeroes(@Body heroRequest: HeroRequest): List<HeroResponse>
+    suspend fun getHeroes(@Header("Authorization") token: String ,@Body heroRequest: HeroRequest): List<HeroResponse>
+
+    @POST("/api/heros/all")
+    suspend fun getHeroesDetail(@Header("Authorization") token: String ,@Body heroRequest: HeroRequest): List<HeroDetail>
+
+    @POST("/api/heros/locations")
+    suspend fun getLocations(@Header("Authorization") token: String ,@Body locationRequest: LocationsRequest): List<HeroLocation>
+
+    @POST("/api/data/herolike")
+    suspend fun toogleFavoriteHero(@Header("Authorization") token: String, @Body favoriteRequest: FavoriteRequest)
 }

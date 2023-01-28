@@ -1,22 +1,32 @@
 package com.franalarza.tryavanzado.di
 
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.franalarza.tryavanzado.data.local.PreferencesManager
 import com.franalarza.tryavanzado.data.remote.DragonBallAPI
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Singleton
 
 
 @Module
 @InstallIn(SingletonComponent::class)
 object RemoteModule {
+
+    @Provides
+    fun provideSharedPreference(@ApplicationContext context: Context): PreferencesManager {
+        return PreferencesManager(context)
+    }
 
     @Provides
     fun providesMoshi(): Moshi {
@@ -46,7 +56,7 @@ object RemoteModule {
         return Retrofit.Builder()
             .baseUrl("https://dragonball.keepcoding.education")
             .client(okHttpClient)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
             .build()
     }
 

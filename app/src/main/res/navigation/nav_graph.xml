@@ -39,8 +39,12 @@
             app:destination="@id/HeroListFragment" />
 
         <argument
-            android:name="hero"
-            app:argType="com.franalarza.tryavanzado.domain.HeroPresent"
+            android:name="id"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="name"
+            app:argType="string"
             app:nullable="false" />
     </fragment>
 </navigation>

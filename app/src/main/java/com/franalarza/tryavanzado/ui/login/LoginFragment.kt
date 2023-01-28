@@ -5,13 +5,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.franalarza.tryavanzado.data.local.PreferencesManager
 import com.franalarza.tryavanzado.databinding.FragmentLoginFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginFragmentBinding
-
+    private val viewModel: LoginViewModel by viewModels()
+    private lateinit var sharedPreferences: PreferencesManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -22,9 +28,39 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        sharedPreferences = PreferencesManager(requireContext())
+        setListeners()
+        setObservers()
+    }
 
+    private fun setListeners() {
         binding.LoginButton.setOnClickListener {
-            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHeroListFragment())
+            if (checkLocalToken() == true) {
+                navigateToHeroesList()
+            } else {
+                viewModel.login(binding.editTextLoginName.text.toString(), binding.editTextLoginPassword.text.toString())
+            }
         }
+    }
+
+    private fun setObservers() {
+        viewModel.liveToken.observe(viewLifecycleOwner) { token ->
+            if (viewModel.checkToken(token)) {
+                navigateToHeroesList()
+                sharedPreferences.saveAuthToken(token)
+            } else {
+                Toast.makeText(requireContext(), "Upsss algo salio mal", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun checkLocalToken(): Boolean? {
+        val localToken = sharedPreferences.fetchAuthToken()
+        return localToken?.isNotEmpty()
+    }
+
+    private fun navigateToHeroesList() {
+        findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHeroListFragment())
+        binding.progressBar.visibility = View.VISIBLE
     }
 }

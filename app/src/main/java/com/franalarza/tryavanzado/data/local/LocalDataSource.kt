@@ -5,4 +5,5 @@ import com.franalarza.tryavanzado.data.local.models.HeroLocal
 interface LocalDataSource {
     fun getHeroes(): Result<List<HeroLocal>>
     fun saveHeroesInLocal(heroes: List<HeroLocal>)
+    fun saveHeroInLocal(hero: HeroLocal)
 }

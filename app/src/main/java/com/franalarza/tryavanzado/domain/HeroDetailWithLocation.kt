@@ -1,9 +1,10 @@
 package com.franalarza.tryavanzado.domain
 
-data class HeroDetail(
+data class HeroDetailWithLocation(
     val id: String,
     val name: String,
-    val photo: String,
     val description: String,
-    var favorite: Boolean,
+    val favourite: Boolean,
+    val latitud: String,
+    val longitud: String
 )

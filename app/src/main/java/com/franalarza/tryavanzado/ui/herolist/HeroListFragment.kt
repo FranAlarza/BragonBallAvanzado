@@ -10,8 +10,6 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.franalarza.tryavanzado.HeroesState
-import com.franalarza.tryavanzado.R
 import com.franalarza.tryavanzado.databinding.FragmentHeroListBinding
 import com.franalarza.tryavanzado.ui.commons.HeroListAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +23,7 @@ class HeroListFragment : Fragment() {
     private val adapter = HeroListAdapter {
         Log.d("Nombre Hero", it.toString())
 
-        findNavController().navigate(HeroListFragmentDirections.actionHeroListFragmentToDetailFragment(it))
+        findNavController().navigate(HeroListFragmentDirections.actionHeroListFragmentToDetailFragment(it.id, it.name))
     }
     private  val viewModel: HeroesListViewModel by viewModels()
 
@@ -49,10 +47,11 @@ class HeroListFragment : Fragment() {
                 when (state) {
                     is HeroesState.Success -> {
                         adapter.submitList(state.heroes)
+                        Log.d("Local", state.heroes.toString())
                     }
 
                     is HeroesState.Failure -> {
-                        adapter.submitList(state.heroes)
+                        Toast.makeText(requireContext(), state.errorMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
 

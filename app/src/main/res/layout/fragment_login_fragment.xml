@@ -25,6 +25,7 @@
         android:backgroundTint="@color/black"
         android:focusableInTouchMode="true"
         android:hint="Inserta tu Nombre o EMail"
+        android:text="franalarza@gmail.com"
         android:inputType="textEmailAddress"
         android:minHeight="48dp" />
 
@@ -36,6 +37,7 @@
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/black"
         android:hint="password"
+        android:text="dinosaurio"
         android:inputType="textPassword"
         android:minHeight="48dp" />
 
