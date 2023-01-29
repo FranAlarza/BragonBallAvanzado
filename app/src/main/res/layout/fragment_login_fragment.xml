@@ -24,8 +24,7 @@
         android:layout_marginHorizontal="50dp"
         android:backgroundTint="@color/black"
         android:focusableInTouchMode="true"
-        android:hint="Inserta tu Nombre o EMail"
-        android:text="franalarza@gmail.com"
+        android:hint="Introduce tu email"
         android:inputType="textEmailAddress"
         android:minHeight="48dp" />
 
@@ -36,8 +35,7 @@
         android:layout_marginHorizontal="50dp"
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/black"
-        android:hint="password"
-        android:text="dinosaurio"
+        android:hint="Password"
         android:inputType="textPassword"
         android:minHeight="48dp" />
 
@@ -61,9 +59,10 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="80dp"
         android:layout_marginTop="24dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/gray"
         android:gravity="center"
-        android:text="Entrar"
+        android:text="@string/entrar"
+        android:textStyle="bold"
         />
 
     </LinearLayout>

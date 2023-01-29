@@ -14,25 +14,21 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val repository: Repository): ViewModel() {
-    private val _token = MutableLiveData<String>()
-    val liveToken: LiveData<String>
+class LoginViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+    private val _token = MutableLiveData<LoginState>()
+    val liveToken: LiveData<LoginState>
         get() = _token
 
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            val tokenResponse = withContext(Dispatchers.IO) {
-                repository.getToken(email, password)
-            }
-            Log.d("Token", repository.getToken(email, password))
+            val tokenResponse = repository.getToken(email, password)
             _token.value = tokenResponse
         }
-
     }
 
-    fun checkToken(token: String): Boolean{
-         return token.isNotEmpty()
+    fun checkToken(token: String): Boolean {
+        return token.isNotEmpty()
     }
 
 }

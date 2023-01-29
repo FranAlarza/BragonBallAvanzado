@@ -2,13 +2,16 @@ package com.franalarza.tryavanzado.ui.herolist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.franalarza.tryavanzado.domain.Repository
+import com.franalarza.tryavanzado.ui.herodetail.HeroDetailStatus
 
 import com.franalarza.tryavanzado.utils.generateHeroesPresent
 import com.franalarza.tryavanzado.utils.getOrAwaitValue
 import com.google.common.truth.Truth
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -17,7 +20,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-
+@OptIn(ExperimentalCoroutinesApi::class)
 class HeroesListViewModelTest {
 
     @get:Rule
@@ -25,6 +28,7 @@ class HeroesListViewModelTest {
 
     private lateinit var sut: HeroesListViewModel
     private lateinit var repository: Repository
+    @OptIn(DelicateCoroutinesApi::class)
     private val mainThreadSurrogate = newSingleThreadContext("UI Thread")
 
     @Before
@@ -32,23 +36,23 @@ class HeroesListViewModelTest {
         Dispatchers.setMain(mainThreadSurrogate)
     }
 
-    @Test
-    fun getLiveHeroes() {
-
-
-    }
 
     @Test
-    fun getHeroes() = runTest {
+    fun `WHEN getHeroes THEN returns not empty list`() = runTest {
         // GIVEN
-        sut = HeroesListViewModel(repository)
         repository = mockk()
-        coEvery { repository.getHeroes() } returns generateHeroesPresent()
+        sut = HeroesListViewModel(repository)
+        coEvery { repository.getHeroesFromLocal() } returns HeroesState.Success(
+            generateHeroesPresent()
+        )
         // WHEN
         sut.getHeroes()
         val actualLiveDataList = sut.liveHeroes.getOrAwaitValue()
         // THEN
-        Truth.assertThat(sut.liveHeroes.value)
+        assert(actualLiveDataList is HeroesState.Success)
+        Truth.assertThat((actualLiveDataList as HeroesState.Success).heroes).isEqualTo(
+            generateHeroesPresent()
+        )
     }
 
     @After

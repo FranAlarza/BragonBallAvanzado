@@ -16,4 +16,10 @@ interface HeroDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertHero(hero: HeroLocal)
+
+    @Query("SELECT * FROM heroes WHERE id LIKE :id")
+    fun getHeroFromLocal(id: String): HeroLocal
+
+    @Query("UPDATE heroes SET favorite = NOT favorite WHERE id=:id")
+    fun toggleFavoriteInLocal(id: String)
 }

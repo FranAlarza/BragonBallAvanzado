@@ -2,6 +2,7 @@ package com.franalarza.tryavanzado.data.mappers
 
 import com.franalarza.tryavanzado.data.local.models.HeroLocal
 import com.franalarza.tryavanzado.data.remote.response.HeroResponse
+import com.franalarza.tryavanzado.domain.HeroDetail
 import com.franalarza.tryavanzado.domain.HeroPresent
 import javax.inject.Inject
 
@@ -17,6 +18,10 @@ class Mappers @Inject constructor() {
 
     fun mapLocalToPresentation(heroes: List<HeroLocal>): List<HeroPresent> {
         return heroes.map { HeroPresent(it.id, it.name, it.photo, it.favorite) }
+    }
+
+    fun mapDetailToLocal(hero: HeroDetail): HeroLocal {
+        return HeroLocal(hero.id, hero.name, hero.photo, hero.description, hero.favorite)
     }
 
 }

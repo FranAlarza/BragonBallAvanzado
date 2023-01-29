@@ -35,21 +35,31 @@ class LoginFragment : Fragment() {
 
     private fun setListeners() {
         binding.LoginButton.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
             if (checkLocalToken() == true) {
                 navigateToHeroesList()
             } else {
-                viewModel.login(binding.editTextLoginName.text.toString(), binding.editTextLoginPassword.text.toString())
+                viewModel.login(
+                    binding.editTextLoginName.text.toString(),
+                    binding.editTextLoginPassword.text.toString()
+                )
             }
         }
     }
 
     private fun setObservers() {
-        viewModel.liveToken.observe(viewLifecycleOwner) { token ->
-            if (viewModel.checkToken(token)) {
-                navigateToHeroesList()
-                sharedPreferences.saveAuthToken(token)
-            } else {
-                Toast.makeText(requireContext(), "Upsss algo salio mal", Toast.LENGTH_SHORT).show()
+        viewModel.liveToken.observe(viewLifecycleOwner) { it ->
+            when (it) {
+                is LoginState.Success -> {
+                    navigateToHeroesList()
+                    sharedPreferences.saveAuthToken(it.token)
+                }
+
+                is LoginState.Failure -> {
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(requireContext(), it.ErrorMessage, Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
         }
     }

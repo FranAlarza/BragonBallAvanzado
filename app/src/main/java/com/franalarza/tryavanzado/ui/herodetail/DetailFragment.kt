@@ -20,7 +20,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import coil.load
 import com.franalarza.tryavanzado.R
+import com.franalarza.tryavanzado.data.local.models.HeroLocal
 import com.franalarza.tryavanzado.databinding.FragmentHeroDetailBinding
+import com.franalarza.tryavanzado.domain.HeroDetail
 import com.franalarza.tryavanzado.domain.HeroLocation
 import com.franalarza.tryavanzado.ui.herolist.HeroesState
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -41,8 +43,9 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
     private var _binding: FragmentHeroDetailBinding? = null
     private val viewModel: DetailViewModel by viewModels()
     private val binding get() = _binding!!
-    private lateinit var googleMap: GoogleMap
+    private var googleMap: GoogleMap? = null
     private var isFavorite = false
+    private lateinit var hero: HeroLocal
 
     private val args: DetailFragmentArgs by navArgs()
 
@@ -62,7 +65,7 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
         setListeners()
         setObservers()
-        viewModel.getHeroDetail(args.name)
+        viewModel.getHeroFromLocal(args.name, args.id)
         viewModel.getHeroLocation(args.id)
     }
 
@@ -71,21 +74,21 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         viewModel.liveHeroDetail.observe(viewLifecycleOwner) {
             with(binding) {
                 when (it) {
-                    is HeroDetailStatus.Success -> {
-                        isFavorite = it.heroesDetail.favorite
-                        if (it.heroesDetail.favorite) {
+                    is HeroLocalState.Success -> {
+                        isFavorite = it.hero.favorite
+                        hero = it.hero
+                        if (it.hero.favorite) {
                             setColorFavoriteButton(Color.RED)
                         } else {
                             setColorFavoriteButton(Color.WHITE)
                         }
-                        heroImageDetail.load(it.heroesDetail.photo)
-                        heroNameDetail.text = it.heroesDetail.name
-                        heroDescription.text = it.heroesDetail.description
-
+                        heroImageDetail.load(it.hero.photo)
+                        heroNameDetail.text = it.hero.name
+                        heroDescription.text = it.hero.description
                     }
 
-                    is HeroDetailStatus.Failure -> {
-                        Toast.makeText(requireContext(), it.errorMessage, Toast.LENGTH_SHORT).show()
+                    is HeroLocalState.Failure -> {
+                        Toast.makeText(requireContext(), it.error, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -109,6 +112,7 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
     private fun setListeners() {
         binding.favoriteButton.setOnClickListener {
             viewModel.toogleFavorite(args.id)
+            viewModel.toggleFavoriteLocal(args.id)
             isFavorite = !isFavorite
             if (isFavorite) {
                 setColorFavoriteButton(Color.RED)
@@ -130,12 +134,12 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
 
     private fun setHeroLocation(latitude: String, longitude: String) {
         val heroLocation = LatLng(latitude.toDouble(), longitude.toDouble())
-        googleMap.addMarker(
+        googleMap?.addMarker(
             MarkerOptions()
                 .position(heroLocation)
                 .title(args.name)
         )
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(heroLocation, 10f))
+        googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(heroLocation, 10f))
     }
 
     private fun setColorFavoriteButton(color: Int) {

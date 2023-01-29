@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.franalarza.tryavanzado.data.remote.request.HeroRequest
+import com.franalarza.tryavanzado.data.local.models.HeroLocal
+import com.franalarza.tryavanzado.domain.HeroDetail
 import com.franalarza.tryavanzado.domain.Repository
-import com.franalarza.tryavanzado.ui.herolist.HeroesState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,8 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    private val _heroDetail = MutableLiveData<HeroDetailStatus>()
-    val liveHeroDetail: LiveData<HeroDetailStatus>
+    private val _heroDetail = MutableLiveData<HeroLocalState>()
+    val liveHeroDetail: LiveData<HeroLocalState>
         get() = _heroDetail
 
     private val _heroLocation = MutableLiveData<LocationState>()
@@ -28,7 +28,6 @@ class DetailViewModel @Inject constructor(private val repository: Repository) : 
     fun getHeroDetail(name: String) {
         viewModelScope.launch {
             val heroDetail = repository.getHeroesDetail(name)
-            _heroDetail.value = heroDetail
         }
     }
 
@@ -42,6 +41,28 @@ class DetailViewModel @Inject constructor(private val repository: Repository) : 
     fun toogleFavorite(hero: String) {
         viewModelScope.launch {
             repository.toogleFavorite(hero)
+        }
+    }
+
+    fun saveHeroInLocal(hero: HeroLocal) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.saveHeroFromLocal(hero)
+        }
+
+    }
+
+    fun getHeroFromLocal(name: String, id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val heroLocalDetail = repository.getHeroFromLocal(name, id)
+            withContext(Dispatchers.Main) {
+                _heroDetail.value = heroLocalDetail
+            }
+        }
+    }
+
+    fun toggleFavoriteLocal(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.toggleFavoriteLocal(id)
         }
     }
 }
